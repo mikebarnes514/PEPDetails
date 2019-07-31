@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <environment include="Development">
+        <link rel="stylesheet" href="~/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/datatables.css" />
+        <link rel="stylesheet" href="~/css/jquery-ui.css" />
+        <link rel="stylesheet" href="~/css/fontawesome-all.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/js/jquery-ui.js"></script>
+        <script src="~/js/datatables.js"></script>
+        <script src="~/js/bootstrap.bundle.js"></script>
+        <script src="~/js/Chart.js"></script>
+        @*<script defer src="~/lib/fontawesome/js/fa-regular.js"></script>
+        <script defer src="~/lib/fontawesome/js/fa-solid.js"></script>
+        <script src="~/lib/fontawesome/js/fontawesome.js"></script>*@
+        <script src="~/js/site.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="~/css/datatables.min.css" />
+        <link rel="stylesheet" href="~/css/jquery-ui.min.css" />
+        <link rel="stylesheet" href="~/css/fontawesome-all.min.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/js/jquery-ui.min.js"></script>
+        <script src="~/js/datatables.min.js"></script>
+        <script src="~/js/bootstrap.bundle.min.js"></script>
+        <script src="~/js/Chart.min.js"></script>
+        @*<script defer src="~/lib/fontawesome/js/fa-regular.js"></script>
+        <script defer src="~/lib/fontawesome/js/fa-solid.js"></script>
+        <script src="~/lib/fontawesome/js/fontawesome.js"></script>*@
+        <script src="~/js/site.js" asp-append-version="true"></script>
+    </environment>
+</head>
+<body>
+    <div class="container-fluid body-content">
+        @RenderBody()
+    </div>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

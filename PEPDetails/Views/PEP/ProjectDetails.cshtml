@@ -1,0 +1,691 @@
+﻿@model PEPDetails.Models.ProjectDetailViewModel
+@{
+    ViewBag.Title = "Project Details - " + Model.ProjectDetail.Cmim.ClientName ;
+}
+
+<form asp-action="ProjectDetails" asp-controller="PEP" id="main-form">
+    <input type="hidden" asp-for="ProjectDetail.Id" />
+    <div class="row">
+        <div class="col-5 col-xl-4" id="project-contact">
+            <h3>@Html.DisplayFor(p => p.ProjectDetail.Cmim.ClientName)</h3>
+            <h4>@Html.DisplayFor(p => p.ProjectDetail.Cmim.ClientMatterId) @Html.DisplayFor(p => p.ProjectDetail.Cmim.MatterName)</h4>
+            <div id="contact-box" class="media mt-3">
+                <div class="align-self-center mr-4 contact-icon d-none d-lg-block">
+                    <span class="far fa-user fa-3x ml-1"></span>
+                    <div class="text-center">Contact</div>
+                </div>
+                <div class="media-body">
+                    <div class="row align-items-top">
+                        <div class="col">
+                            <h6 class="media-heading">@(String.Format("{0}{1}", String.IsNullOrEmpty(Model.ProjectDetail.Cmim.ContactLastName) ? "" : Model.ProjectDetail.Cmim.ContactLastName + ", ", Model.ProjectDetail.Cmim.ContactFirstName))</h6>
+                        </div>
+                    </div>
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <div>@Html.DisplayFor(p=>p.ProjectDetail.Cmim.ContactAddressLine1)</div>
+                            <div>@Html.DisplayFor(p=>p.ProjectDetail.Cmim.ContactAddressLine2)</div>
+                            <div>@(String.Format("{0}{1} {2}", String.IsNullOrEmpty(Model.ProjectDetail.Cmim.ContactAddressCity) ? "" : Model.ProjectDetail.Cmim.ContactAddressCity + ", ", Model.ProjectDetail.Cmim.ContactAddressState, Model.ProjectDetail.Cmim.ContactAddressPostalCode))</div>
+                        </div>
+                    </div>
+                    <div class="row align-items-end">
+                        <div class="col">
+                            <div>@Html.DisplayFor(p => p.ProjectDetail.Cmim.ContactPhone)</div>
+                            <div><a href="mailto:@(Model.ProjectDetail.Cmim.ContactEmail)">@Html.DisplayFor(p => p.ProjectDetail.Cmim.ContactEmail)</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-3 col-xl-4" id="project-atty">
+            <div id="responsible-atty" class="mb-2">
+                <span class="small">Responsible Attorney</span>
+                <div class="media">
+                    <img class="mr-2 align-self-center d-none d-xl-block" src="@Html.DisplayFor(p => p.ResponsibleAttyImageURL)" height="90" width="75" />
+                    <div class="media-body">
+                        <h6 class="media-heading mb-3">@Html.DisplayFor(p => p.ProjectDetail.ResponsibleAtty.FullName)</h6>
+                        <p class="mb-0">
+                            <i class="fas fa-phone mr-2 d-none d-xl-inline" data-fa-transform="flip-h"></i>@Html.DisplayFor(p => p.ProjectDetail.ResponsibleAtty.Phone)<br />
+                            <i class="far fa-envelope mr-2 d-none d-xl-inline"></i><a href="mailto:@Html.DisplayFor(p => p.ProjectDetail.ResponsibleAtty.Email)">@Html.DisplayFor(p => p.ProjectDetail.ResponsibleAtty.Email)</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div id="billing-atty">
+                <span class="small">Billing Attorney</span>
+                <div class="media">
+                    <img class="mr-2 align-self-center d-none d-xl-block" src="@Html.DisplayFor(p => p.BillingAttyImageURL)" height="90" width="75" />
+                    <div class="media-body">
+                        <h6 class="media-heading mb-3">@Html.DisplayFor(p => p.ProjectDetail.BillingAtty.FullName)</h6>
+                        <p class="mb-0">
+                            <i class="fas fa-phone mr-2 d-none d-xl-inline" data-fa-transform="flip-h"></i>@Html.DisplayFor(p => p.ProjectDetail.BillingAtty.Phone)<br />
+                            <i class="far fa-envelope mr-2 d-none d-xl-inline"></i><a href="mailto:@Html.DisplayFor(p => p.ProjectDetail.BillingAtty.Email)">@Html.DisplayFor(p => p.ProjectDetail.BillingAtty.Email)</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-4 col-xl-4 align-self-center" id="project-billing">
+            <div class="row">
+                <div id="billing-chart" class="col-0 col-lg-4 col-xl-5 d-none d-lg-block align-self-center">
+                    <canvas id="mychart" height="100%" width="100%" ></canvas>
+                </div>
+                <div id="billing-details" class="col-12 col-lg-8 col-xl-7">
+                    <table cellpadding="2" width="100%">
+                        <tr>
+                            <td>Quote</td>
+                            <td><input asp-for="ProjectDetail.Billing.Quote" asp-format="{0:C}" name="quote" id="quote-text" class="ml-3" /></td>
+                        </tr>
+                        <tr>
+                            <td>Billed</td>
+                            <td id="pep-billed">@(String.Format("{0:c}", Model.BilledAmount))</td>
+                        </tr>
+                        <tr>
+                            <td>Unbilled</td>
+                            <td>@(String.Format("{0:c}", Model.ProjectDetail.Billing.UnbilledTotal))</td>
+                        </tr>
+                        <tr>
+                            <td>Project Total</td>
+                            <td id="pep-total">@(String.Format("{0:c}", Model.ProjectDetail.Billing.UnbilledTotal + Model.BilledAmount))</td>
+                        </tr>
+                        <tr>
+                            <td>Last Billing</td>
+                            <td>@(Model.ProjectDetail.Billing.LastBillDate.HasValue ? Model.ProjectDetail.Billing.LastBillDate.Value.ToString("d") : "none")</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><a class="btn btn-info mj-secondary btn-sm btn-block mt-3" href="https://mjsc.rippe.com/LMS/action/inquiry/time?client=@(Model.ProjectDetail.Cmim.ClientId)&matter=@(Model.ProjectDetail.Cmim.MatterId)" target="_blank">LMS+</a></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><div class="btn btn-info mj-secondary btn-sm btn-block mt-1" data-toggle="modal" data-target="#pop-docs">DMS</div></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div id="project-tasks" class="col-12 col-lg-7">
+            <div class="project-header">
+                <div class="row">
+                    <div class="col-3">
+                        <h5>Project Tasks</h5>
+                    </div>
+                    <div class="col align-self-center pl-0 mr-2">
+                        <div class="progress">
+                            @{ 
+                                int comp = Model.ProjectDetail.ProjectTask.Where(t => t.IsComplete == true).Count();
+                                int tot = Model.ProjectDetail.ProjectTask.Count();
+                                int percentage = (int)Math.Round(comp * 100.0 / ((tot == 0) ? 1 : tot));
+                                string perstr = String.Format("{0}%{1}", percentage, percentage > 10 ? " complete" : "");
+                            }
+                            <div id="task-pb" class="progress-bar bg-success small" role="progressbar" aria-valuenow="@comp" aria-valuemin="0" aria-valuemax="@tot" style="width: @percentage%">@perstr</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div id="project-dates" class="col-3">
+                    <table>
+                        <tr><td class="small text-center">Project Type</td></tr>
+                        <tr><td><select asp-for="ProjectDetail.ProjectTypeId" asp-items="@(new SelectList(Model.ProjectTypes, "Id", "Name"))" name="typeId" class="form-control"></select></td></tr>
+                        <tr><td class="small text-center">Project Start</td></tr>
+                        <tr><td><input asp-for="ProjectDetail.ProjectStartDate" asp-format="{0:MM/dd/yyyy}" type="text" name="start" id="project-start-date-picker" class="form-control text-center pep-date-picker"/></td></tr>
+                        <tr><td class="small text-center">Initial Meeting</td></tr>
+                        <tr><td><input asp-for="ProjectDetail.InitialMeetingDate" asp-format="{0:MM/dd/yyyy}" type="text" name="meeting" class="date-picker form-control text-center pep-date-picker" /></td></tr>
+                        <tr><td class="small text-center">Signing Deadline</td></tr>
+                        <tr><td><input asp-for="ProjectDetail.SigningDeadline" asp-format="{0:MM/dd/yyyy}" type="text" name="deadline" class="date-picker form-control text-center pep-date-picker" /></td></tr>
+                        <tr><td class="small text-center">Signing Date</td></tr>
+                        <tr><td><input asp-for="ProjectDetail.SigningDate" asp-format="{0:MM/dd/yyyy}" type="text" name="signing" class="date-picker form-control text-center pep-date-picker" /></td></tr>
+                        <tr><td class="small text-center">Mailing Deadline</td></tr>
+                        <tr><td><input asp-for="ProjectDetail.MailingDate" asp-format="{0:MM/dd/yyyy}" type="text" name="mailing" class="date-picker form-control text-center pep-date-picker" /></td></tr>
+                    </table>
+                </div>
+                <div class="col-9 pl-0">
+                    <div class="accordion" id="task-list">
+                        @foreach (var s in Model.ProjectStages)
+                        {
+                            int complete = Model.ProjectDetail.ProjectTask.Where(t => t.Task.StageId == s.Id).Where(t => t.IsComplete == true).Count();
+                            int total = Model.ProjectDetail.ProjectTask.Where(t => t.Task.StageId == s.Id).Count();
+                            
+                            <h3>
+                                <span style="display: inline-block; width: 45%">@(s.Name)</span>
+                                <span id="task-completion-@s.Id" style="display: inline-block; width: 48%; text-align: right">@complete of @total completed</span>
+                            </h3>
+                            <div class="p-0">
+                                <table class="table table-sm task-table" width="100%" cellpadding="0">
+                                    <thead>
+                                        <tr class="small">
+                                            <th></th>
+                                            <th></th>
+                                            <th class="task-name">Task</th>
+                                            <th class="task-date">Completed</th>
+                                            <th class="task-notes">Notes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach(var t in Model.ProjectDetail.ProjectTask.Where(pt=>pt.Task.StageId == s.Id))
+                                        {
+                                            <tr id="table-task-@t.Id">
+                                                <td class="table-task-check">
+                                                    <input type="checkbox" id="task-@t.Id-complete" class="task-check" name="task-@t.Id-complete" value="true" @(t.IsComplete ? "checked" : "") /><label for="task-@t.Id-complete"></label>
+                                                </td>
+                                                <td>
+                                                    <span class="fas @(t.Task.IsAttorney ? "mj-primary-txt fa-arrow-left" : "mj-secondary-txt fa-arrow-right")"></span>
+                                                </td>
+                                                <td>@t.Task.Name</td>
+                                                <td class="table-task-date">
+                                                    <input type="text" class="btn btn-link task-date-picker w-100@(t.IsComplete ? "" : " invisible")" name="task-@t.Id-date" value="@(t.CompletionDate.HasValue ? t.CompletionDate.Value.ToString("MM/dd/yyyy") : "")" />
+                                                </td>
+                                                <td class="table-task-notes">
+                                                    <input type="text" class="form-control" name="task-@t.Id-notes" value="@t.Notes" />
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="project-activities" class="col-12 col-lg-5 pl-lg-0">
+            <div id="activity-list">
+                <div class="project-header">
+                    <h5>
+                        Other Activities
+                        <div id="add-activity" data-toggle="modal" data-target="#pop-add"><span class="far fa-plus-square fa-lg"></span></div>
+                    </h5>
+                    
+                </div>
+                <table id="activity-table" class="table table-striped table-sm dt-responsive" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Date</th>
+                            <th>Activity</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div id="project-notes">
+                <div class="project-header"><h5>Notes</h5></div>
+                <textarea asp-for="ProjectDetail.Notes" name="notes" class="form-control" rows="5"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-end mt-3">
+        <div class="col-4 col-md-3 col-xl-2">
+            <button type="button" class="btn btn-secondary mj-primary btn-block" data-toggle="modal" data-target="#pop-complete">Complete Project</button>
+        </div>
+        <div class="col-4 col-md-3 col-xl-2 ml-3">
+            <button type="submit" class="btn btn-info mj-secondary btn-block">Save Changes</button>
+        </div>
+    </div>
+</form>
+<div id="pop-add" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addlabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="act-form" onsubmit="return false;" method="post">
+                <div class="modal-body">
+                    <div class="row text-primary mb-3">
+                        <div class="col-1 align-self-center">
+                            <span class="far fa-plus-square fa-4x"></span>
+                        </div>
+                        <div class="col-11">
+                            <div class="display-4 text-center ml-2">Add an Activity</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="act-type" class="control-label">Activity</label>
+                                <select id="act-type" class="form-control" name="activityTypeId" asp-items="@(new SelectList(Model.ActivityTypes, "Id", "Name"))"></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="act-date" class="control-label">Date</label>
+                                <input id="act-date" class="form-control date-picker" type="text" name="activityDate" value="@(DateTime.Today.ToShortDateString())" />
+                            </div>
+                            <div class="form-group">
+                                <label for="act-notes" class="control-label">Notes</label>
+                                <textarea id="act-notes" class="form-control" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="row form-group justify-content-end mr-2">
+                        <button class="btn btn-primary mr-1" type="button" data-dismiss="modal" onclick="submitAdd()">Add</button>
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="pop-check" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="task-name" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="check-form" method="post" onsubmit="return false;">
+                <input type="hidden" name="projectId" value="@Model.ProjectDetail.Id" />
+                <input type="hidden" id="task-id-val" name="projectTaskId" value="-1" />
+                <div class="modal-body">
+                    <div class="row text-success mb-3">
+                        <div class="col-1 align-self-center">
+                            <span class="far fa-check-square fa-4x text-center"></span>
+                        </div>
+                        <div class="col-11">
+                            <div class="display-4 text-center ml-2">Task Completed</div>
+                            <div id="task-name" class="lead text-muted text-center"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <input type="hidden" name="projectId" value="@Model.ProjectDetail.Id" />
+                            <input type="hidden" id="task-id-val" name="projectTaskId" />
+                            <div class="form-group">
+                                <label for="task-date" class="control-label">Completion Date</label>
+                                <input id="task-date" class="form-control date-picker" type="text" name="completed" value="@(DateTime.Today.ToShortDateString())" />
+                            </div>
+                            <div class="form-group">
+                                <label for="task-notes" class="control-label">Notes</label>
+                                <textarea id="task-notes" class="form-control" name="notes" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="row form-group justify-content-end mr-2">
+                        <button class="btn btn-primary mr-1" type="button" data-dismiss="modal" onclick="completeTask()">Add</button>
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>    
+</div>
+<div id="pop-save" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modelSaveLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                Project has been saved.
+            </div>
+        </div>
+    </div>
+</div>
+<div id="pop-complete" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+    <form method="post" asp-action="CompleteProject" asp-controller="PEP">
+        <input type="hidden" name="id" value="@Model.ProjectDetail.Id" />
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">Complete Project?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Completing the project will remove it from your active list and prevent you from recording further activity. Do you want to continue?
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-info mj-secondary">Complete Project</button>
+                    <button type="button" class="btn btn-secondary mj-primary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div id="pop-docs" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <table id="document-table" class="table table-striped table-sm dt-responsive" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th width="50px">Type</th>
+                            <th>Document</th>
+                            <th width="100px">Number</th>
+                            <th width="100px">Author</th>
+                            <th width="100px">Last Edit</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary mj-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#activity-table").DataTable({
+            "processing": true,
+            "serverSide": true,
+            "searching": false,
+            "ordering": false,
+            "scrollY": "206px",
+            "scrollCollapse": true,
+            "paging": false,
+            "info": false,
+            "ajax": {
+                "url": "/PEP/PEP/LoadActivities",
+                "type": "POST",
+                "data": function (d) { d.activityId = @(Model.ProjectDetail.Id); }
+            },
+            "columnDefs": [{
+                "targets": [0],
+                "visible": false,
+                "searchable": false
+            }],
+            "columns": [
+                { "data": "id", "name": "Id", "autoWidth": true },
+                { "data": "date", "name": "Date", "width": "15%" },
+                { "data": "code", "name": "Activity", "width": "20%" },
+                { "data": "notes", "name": "Notes", "width": "65%" }
+            ]
+        });
+
+        $("#document-table").DataTable({
+            "processing": true,
+            "serverSide": false,
+            "searching": false,
+            "ordering": false,
+            "scrollY": "500px",
+            "scrollCollapse": true,
+            "paging": true,
+            "info": false,
+            "dom": "rtlip",
+            "ajax": {
+                "url": 'http://gr-hand-01:56789/HandshakeWebServices/Odata/Odata.ashx/VwDocument2',
+                "contentType": 'application/json; charset=utf-8',
+                "type": 'GET',
+                "dataType": 'jsonp',
+                "data": {
+                    $select: 'docname,docnum,appicon,author,editwhen',
+                    hsf: "@@C1Alias='@Model.ProjectDetail.Cmim.ClientId' AND C2Alias='@Model.ProjectDetail.Cmim.MatterId'",
+                    hsInfo: 'all',
+                    hso: "editwhen+desc"
+                },
+                "dataSrc": "d.results",
+                jsonp: '$callback'
+            },
+            "columnDefs": [{
+                "targets": [0, 2, 3, 4],
+                "className": "dt-center"
+            }],
+            "columns": [
+                {
+                    "data": "appicon", "name": "Type", "width": "50px",
+                    "render": function (d, t, r) {
+                        return '<img src="http://intranet.millerjohnson.com/_catalogs/masterpage/mjdesign/images/' + d + '">';
+                    }
+                },
+                {
+                    "data": "docname", "name": "Document", "autoWidth": true,
+                    "render": function (d, t, r) {
+                        return '<a href="iwl:dms=mjsciman&lib=mj_dms&num=' + r.docnum + '&ver=1&latest=1&command=viewcmd">' + d + '</a>';
+                    }
+                },
+                { "data": "docnum", "name": "Number", "width": "100px" },
+                { "data": "author", "name": "Author", "width": "100px" },
+                {
+                    "data": "editwhen", "name": "Last Edit", "width": "100px",
+                    "render": function (d, t, r) {
+                        return (new Date(parseInt(d.substr(6)))).toLocaleDateString();
+                    }
+                }
+            ]
+        });
+
+        Chart.pluginService.register({
+            beforeDraw: function (chart) {
+                if (chart.config.options.elements.center) {
+                    var ctx = chart.chart.ctx;
+                    var centerConfig = chart.config.options.elements.center;
+                    var fontStyle = centerConfig.fontStyle || 'Segoe UI';
+                    var fontSize = (chart.height / 114).toFixed(2);
+                    var txt = chart.data.datasets[0].data[2] != 0 ? chart.data.datasets[0].data[2].formatMoney(2) : chart.data.datasets[0].data[3].formatMoney(2);
+                    var txt2 = chart.data.datasets[0].data[2] != 0 ? 'over' : 'remaining';
+                    var color = chart.data.datasets[0].data[2] != 0 ? chart.data.datasets[0].backgroundColor[2] : chart.data.datasets[0].backgroundColor[3];
+                    var sidePadding = centerConfig.sidePadding || 20;
+                    var sidePaddingCalculated = (sidePadding / 100) * (chart.innerRadius * 2)
+
+                    ctx.font = "2em " + fontStyle;
+                    var stringWidth = ctx.measureText(txt).width > ctx.measureText(txt2).width ? ctx.measureText(txt).width : ctx.measureText(txt2).width;
+                    var elementWidth = (chart.innerRadius * 2) - sidePaddingCalculated;
+                    var widthRatio = elementWidth / stringWidth;
+                    var newFontSize = Math.floor(30 * widthRatio);
+                    var elementHeight = (chart.innerRadius * 2);
+                    var fontSizeToUse = (Math.min(newFontSize, elementHeight) / 16.0).toFixed(2);
+
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    var centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
+                    var centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
+                    ctx.font = fontSizeToUse + "em " + fontStyle;
+                    ctx.fillStyle = color;
+                    ctx.fillText(txt, centerX, centerY - (15 * widthRatio));
+                    ctx.fillText(txt2, centerX, centerY + (15 * widthRatio));
+                }
+            }
+        });
+
+
+        var mychart = $("#mychart");
+        var ctx = document.getElementById("mychart").getContext("2d");
+        var ctr = new Chart(ctx, {
+            type: "doughnut",
+            data: {
+                datasets: [{
+                    data: [@Model.BilledAmount, @Model.ProjectDetail.Billing.UnbilledTotal, @Model.BudgetOverrun, @Model.RemainingBudget],
+                    backgroundColor: [
+                        '#f2c413',
+                        '#666',
+                        '#cc0000',
+                        '#00743f'
+                    ]
+                }],
+                labels: ["Billed", "Unbilled", "Overage", "Remaining"]
+            },
+            options: {
+                cutoutPercentage: 85,
+                legend: { display: false },
+                elements: {
+                    center: { sidePadding: 10 }
+                }
+            }
+        });
+
+        $("#quote-text").on("input propertychange paste", function () {
+            $.ajax({
+                url: "/PEP/PEP/UpdateQuote",
+                type: "POST",
+                data: {
+                    id: @Model.ProjectDetail.Id,
+                    amount: $(this).val()
+                },
+                success: function (response) {
+                    ctr.data.datasets[0].data[2] = response.overrun;
+                    ctr.data.datasets[0].data[3] = response.budget;
+                    ctr.update();
+
+                    if (response.overrun > 0)
+                        $("#billing-txt").removeClass("text-success").addClass("text-danger").html(response.overrun.formatMoney(2) + "<br>over");
+                    else
+                        $("#billing-txt").removeClass("text-danger").addClass("text-success").html(response.budget.formatMoney(2) + "<br>remaining");
+                }
+
+            })
+
+        });
+
+        $('#task-list').accordion({
+            heightStyle: "fill",
+            active: getActiveStageIndex()
+        });
+
+        $('.date-picker').datepicker();
+        $('.task-date-picker').datepicker({ dateFormat: "mm/dd/yy" });
+        $('#project-start-date-picker').datepicker({
+            onSelect: function (newdate) {
+                $.ajax({
+                    url: "/PEP/PEP/UpdateStartDate",
+                    type: "POST",
+                    data: {
+                        id: @Model.ProjectDetail.Id,
+                        start: newdate
+                    },
+                    success: function (response) {
+                        $("#pep-billed").html(response.billed.formatMoney(2));
+                        $("#pep-total").html((response.billed + response.unbilled).formatMoney(2));
+                        if (response.overrun > 0)
+                            $("#billing-txt").removeClass("text-success").addClass("text-danger").html(response.overrun.formatMoney(2) + "<br>over");
+                        else
+                            $("#billing-txt").removeClass("text-danger").addClass("text-success").html(response.budget.formatMoney(2) + "<br>remaining");
+
+                        ctr.data.datasets[0].data[0] = response.billed;
+                        ctr.data.datasets[0].data[1] = response.unbilled;
+                        ctr.data.datasets[0].data[2] = response.overrun;
+                        ctr.data.datasets[0].data[3] = response.budget;
+                        ctr.update();
+                    }
+                });
+            }
+        });
+
+        $('.task-check').on('change', function () {
+            var taskid = this.name.replace('task-', '').replace('-complete', '');
+
+            if (this.checked) {
+                var stageid = $("#task-list").accordion("option", "active") + 1;
+                var stageComp = $("#task-completion-" + stageid).text().replace(/(\d+)/, function () { return arguments[1] * 1 + 1 });
+                var newcomp = parseInt($("#task-pb").attr("aria-valuenow")) + 1;
+                var newtot = parseInt($("#task-pb").attr("aria-valuemax"));
+                var newper = Math.round(newcomp * 100 / newtot);
+
+                $("#table-task-" + taskid + " .table-task-check div").toggleClass("d-none");
+                $("#table-task-" + taskid + " .table-task-check").find("[data-fa-i2svg]").toggleClass("d-none");
+                $("#task-completion-" + stageid).html(stageComp);
+                $("#task-pb").attr("aria-valuenow", newcomp).css("width", newper + "%").html(newper + "% complete");
+                $("input[name='task-" + taskid + "-date']").val((new Date()).formatShortDate());
+            }
+            else {
+                var stageid = $("#task-list").accordion("option", "active") + 1;
+                var stageComp = $("#task-completion-" + stageid).text().replace(/(\d+)/, function () { return arguments[1] * 1 - 1 });
+                var newcomp = parseInt($("#task-pb").attr("aria-valuenow")) - 1;
+                var newtot = parseInt($("#task-pb").attr("aria-valuemax"));
+                var newper = Math.round(newcomp * 100 / newtot);
+
+                $("#table-task-" + taskid + " .table-task-check div").toggleClass("d-none");
+                $("#table-task-" + taskid + " .table-task-check").find("[data-fa-i2svg]").toggleClass("d-none");
+                $("#task-completion-" + stageid).html(stageComp);
+                $("#task-pb").attr("aria-valuenow", newcomp).css("width", newper + "%").html(newper + "% complete");
+            }
+
+            $("input[name='task-" + taskid + "-date']").toggleClass("invisible");
+        });
+
+        $("#main-form input[type='submit']").click(function (e) {
+            var frm = $("#main-form");
+            var frmdata = frm.serialize();
+            var frmurl = frm.attr("action");
+
+            e.preventDefault();
+            $.ajax({
+                url: frmurl,
+                type: "POST",
+                data: frmdata,
+                success: function (response) {
+                    $("#pop-save").show();
+                    setTimeout(function () { $("#pop-save").hide(); }, 3000);
+                }
+            });
+        });
+
+        $('#pop-check').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var taskId = button.data('taskid');
+            var taskName = button.data('taskname');
+
+            $(this).find('#task-name').text(taskName);
+            $(this).find('#task-id-val').val(taskId);
+        });
+
+        $('#pop-docs').on('shown.bs.modal', function (e) {
+            $("#document-table").DataTable().columns.adjust();
+        });
+    });
+
+    function getActiveStageIndex() {
+        var index = 0;
+        var ctid = @(Model.ProjectDetail.CurrentTaskId.HasValue ? Model.ProjectDetail.CurrentTaskId.Value : 0);
+        var current = 0;
+
+        $("#task-list").find("table").each(function () {
+            if ($(this).find("#table-task-" + ctid).length > 0) {
+                index = current;
+            }
+
+            current++;
+        });
+
+        return index;
+
+    }
+
+    function convertDate(d) {
+        var date = new Date(d);
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        return months[date.getMonth()] + ' ' + date.getDate();
+    }
+
+    function submitAdd() {
+        $.ajax({
+            type: "post",
+            url: "/PEP/PEP/AddActivity",
+            data: {
+                projectId: @Model.ProjectDetail.Id,
+                activityTypeId: $("#act-type").val(),
+                activityDate: $("#act-date").val(),
+                notes: $("#act-notes").val()
+            },
+            success: function () {
+                $("#activity-table").DataTable().ajax.reload();
+            }
+        });
+    }
+
+    Number.prototype.formatMoney = function (c, d, t) {
+        var n = this,
+            c = isNaN(c = Math.abs(c)) ? 2 : c,
+            d = d == undefined ? "." : d,
+            t = t == undefined ? "," : t,
+            s = n < 0 ? "-$" : "$",
+            i = String(parseInt(n = Math.abs(Number(n) || 0).toFixed(c))),
+            j = (j = i.length) > 3 ? j % 3 : 0;
+        return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+    };
+
+    Date.prototype.formatShortDate = function () {
+        var month = this.getMonth() + 1;
+        var day = this.getDate();
+        var year = this.getFullYear();
+
+        if (month < 10)
+            month = "0" + month;
+
+        return month + "/" + day + "/" + year;
+    }
+
+    Number.prototype.formatBudget = function (remaining, over) {
+        var txt = "";
+
+        if (remaining > 0)
+            txt = remaining.formatMoney(2) + " remaining";
+        else
+            txt = over.formatMoney(2) + " over";
+
+        return txt;
+    }
+</script>

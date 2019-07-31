@@ -1,0 +1,200 @@
+﻿body {
+    margin: 0 auto;
+    /*width: 1588px;
+    height: 500px;*/
+    max-width: 1588px;
+    background: #333;
+}
+
+@media (max-width: 1199.98px) {
+   #billing-txt {
+        font-size: 14px;
+    }
+}
+
+@media (max-width:991.98px) {
+    body {
+        font-size: 14px;
+    }
+
+    #project-atty {
+        padding-left: 0;
+        overflow: hidden;
+    }
+
+    h3 {
+        font-size: 1.25rem;
+    }
+
+    h4 {
+        font-size: 1rem;
+    }
+}
+
+
+
+.container-fluid {
+    background: white;
+    border-radius: 8px;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+#contact-box {
+    border: 4px solid #003087;
+    border-radius: 8px;
+    padding: 8px;
+    margin-right: 24px;
+}
+
+.contact-icon {
+    color: #009cde;
+}
+
+#billing-details table {
+    text-align: right;
+}
+
+.project-header {
+    background: #003087;
+    margin-top: 15px;
+    border-radius: 4px;
+}
+
+.project-header h5 {
+    padding-left: 0.4rem;
+    padding-bottom: 0.25rem;
+    margin-bottom: 0;
+    color: #fff;
+    font-weight: 400;
+}
+
+#project-notes textarea {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+#activity-table_wrapper {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+#activity-table_wrapper table thead th {
+    height: 20px;
+    padding-bottom: 0;
+    padding-top: 0;
+}
+
+#activity-table tbody td {
+    vertical-align: top;
+}
+
+#task-list {
+    margin-top: 22px;
+}
+
+.task-table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.task-date {
+    width: 19%;
+    text-align: center;
+}
+
+.task-name {
+    width: 42%;
+}
+
+.task-notes {
+    width: 32%;
+    overflow:hidden;
+}
+
+input[type="checkbox"] {
+    display: none;
+}
+
+input[type="checkbox"] + label:before {
+    font-family: "Font Awesome 5 Free";
+    display: inline-block;
+    content: "\f0c8";
+    font-size: 1em;
+}
+
+input[type="checkbox"]:checked + label:before {
+    content: "\f14a";
+    color: #28a745;
+}
+
+.task-date-picker {
+    vertical-align: top;
+}
+
+.pep-date-picker {
+    margin-bottom: 4px;
+}
+
+#add-activity {
+    float: right;
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+.task-check {
+    cursor: pointer;
+}
+
+#billing-txt {
+    /*width: 100%;
+    height: 60px;
+    top: 50%;
+    margin-top: -30px;
+    position: absolute;*/
+}
+
+#mychart {
+    z-index: 1;
+}
+
+#quote-text {
+    width: 100px;
+    text-align: right;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    padding-right: 4px;
+}
+
+/*.ui-accordion-header {
+    background: #aaa;
+}*/
+
+.ui-accordion-header.ui-state-active {
+    background: #009cde;
+    border-color: #003087;
+}
+
+.mj-primary {
+    background: #003087;
+}
+
+.mj-primary-txt {
+    color: #003087;
+}
+
+.mj-secondary {
+    background: #009cde;
+}
+
+.mj-secondary-txt {
+    color: #009cde;
+}
+
+#pop-docs .modal-dialog {
+    width: 960px;
+    max-width: 960px;
+}

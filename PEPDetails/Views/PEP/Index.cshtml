@@ -1,0 +1,30 @@
+﻿@model IEnumerable<PEPDetails.Models.Data.Project>
+@{ ViewBag.Title = "Projects"; }
+
+<h2>Projects</h2>
+<table class="table">
+    <tr>
+        <th>Id</th>
+        <th>Client</th>
+        <th>Matter</th>
+    </tr>
+    @foreach (var project in Model)
+    {
+        <tr>
+            <td>
+                @if (project.IsComplete)
+                {
+                    <a asp-action="ProjectView" asp-route-id="@project.Id" target="_blank">@Html.DisplayFor(modelItem => project.Id)</a>
+                }
+                else
+                {
+                    <a asp-action="ProjectDetails" asp-route-id="@project.Id" target="_blank">@Html.DisplayFor(modelItem => project.Id)</a>
+                }
+            </td>
+            <td>@Html.DisplayFor(modelItem => project.Cmim.ClientName)</td>
+            <td>@Html.DisplayFor(modelItem => project.Cmim.MatterName)</td>
+        </tr>
+    }
+</table>
+
+
